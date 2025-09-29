@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,7 +14,12 @@ import java.util.List;
 public class UserController 
 {
 	@Autowired
-	private UserService userService;
+	private final UserService userService;
+	
+	public UserController(UserService userService)
+	{
+		this.userService=userService;
+	}
 	
 	//Get users
 	//curl http://localhost:8080/users    (ALL)
@@ -35,6 +40,14 @@ public class UserController
 		return userService.createUser(user);
 	}
 	
+	//User registration
+	@PostMapping("/register")
+	public ResponseEntity<User> register(@RequestBody User user)
+	{	
+		User saved = userService.createUser(user);
+		return ResponseEntity.ok(saved);
+		
+	}
 	//Delete user
 	//curl -X DELETE http://localhost:8080/users/id (replace id with id)
 	@DeleteMapping("/{id}")

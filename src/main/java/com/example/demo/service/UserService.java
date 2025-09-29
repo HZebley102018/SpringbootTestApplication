@@ -10,21 +10,35 @@ import org.springframework.stereotype.Service;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 @Service
 public class UserService 
 {
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 	
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
+	private final BCryptPasswordEncoder passwordEncoder;
 	
-	//create User
+	@Autowired
+	public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder)
+	{
+		this.userRepository = userRepository;
+		this.passwordEncoder =passwordEncoder;
+	}
+	
+	//create User -- hash password
 	public User createUser(User user)
 	{
 		try
 		{
 			logger.info("Creating user: {}", user.getUserName());
+			//hash password
+			if (user.getPassword() != null) 
+			{
+				user.setPassword(passwordEncoder.encode(user.getPassword()));
+			}
 			return userRepository.save(user);
 			
 		}
@@ -53,12 +67,16 @@ public class UserService
 	//Update Users
 	public User updateUser(Long id, User updatedUser)
 	{
-		logger.info("Updating yser with ID {}", id);
+		logger.info("Updating user with ID {}", id);
 		return userRepository.findById(id)
 				.map(user -> {						user.setFirstName(updatedUser.getFirstName());
 					user.setLastName(updatedUser.getLastName());
 					user.setUserName(updatedUser.getUserName());
 					user.setEmail(updatedUser.getEmail());
+					if(user.getPassword() != null && !user.getPassword().isBlank())
+						{
+							user.setPassword(passwordEncoder.encode(user.getPassword()));
+						};
 					return userRepository.save(user);
 				})
 				.orElseThrow(() -> new RuntimeException("User not found."));	
