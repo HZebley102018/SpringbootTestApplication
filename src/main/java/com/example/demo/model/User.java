@@ -3,6 +3,7 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 @Entity
 public class User 
 {
@@ -12,7 +13,6 @@ public class User
 	
 	private String firstName;
 	private String lastName;
-	@JsonProperty("userName")
 	private String userName;
 	private String email;
 	

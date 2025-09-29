@@ -2,6 +2,9 @@ package com.example.demo.controller;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,20 +13,15 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController 
 {
-	private final UserRepository userRepository;
-	
-	public UserController(UserRepository userRepository)
-	{
-		this.userRepository = userRepository;
-	}
+	@Autowired
+	private UserService userService;
 	
 	//Get users
 	//curl http://localhost:8080/users    (ALL)
-	//curl http://localhost:8080/users/{id}    (Single user)
 	@GetMapping
 	public List<User> getUsers()
 	{
-		return userRepository.findAll();
+		return userService.getAllUsers();
 	}
 	
 	//Add user
@@ -34,7 +32,7 @@ public class UserController
 	@PostMapping
 	public User addUser(@RequestBody User user)
 	{
-		return userRepository.save(user);
+		return userService.createUser(user);
 	}
 	
 	//Delete user
@@ -42,7 +40,7 @@ public class UserController
 	@DeleteMapping("/{id}")
 	public void deleteUser(@PathVariable Long id)
 	{
-		userRepository.deleteById(id);
+		userService.deleteUser(id);
 	}
 
 	//update user
@@ -53,14 +51,8 @@ public class UserController
 	
 	@PutMapping("/{id}")
 	public User updateUser(@PathVariable Long id,
-			@RequestBody User userDetails)
+			@RequestBody User user)
 	{
-		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id " + id));
-		user.setFirstName(userDetails.getFirstName());
-		user.setLastName(userDetails.getLastName());
-		user.setUserName(userDetails.getUserName());
-		user.setEmail(userDetails.getEmail());
-
-		return userRepository.save(user);
+		return userService.updateUser(id, user);
 	}
 }
