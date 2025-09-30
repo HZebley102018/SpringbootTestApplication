@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -39,6 +40,15 @@ public class UserController
 	{
 		return userService.createUser(user);
 	}
+	//Add Admin
+	@PostMapping("/create-admin")
+	public ResponseEntity<User> createAdmin(@RequestBody User adminUser,
+			@RequestParam String creatorUserName)
+	{
+		User created = userService.createAdmin(adminUser, creatorUserName);
+		return ResponseEntity.ok(created);
+	}
+	
 	
 	//User registration
 	@PostMapping("/register")
@@ -67,5 +77,13 @@ public class UserController
 			@RequestBody User user)
 	{
 		return userService.updateUser(id, user);
+	}
+	
+	//promote user to admin
+	@PutMapping("/superuser/{id}")
+	public User promoteUser(@PathVariable Long id, @RequestBody Map<String, String> payload)
+	{
+		String newRole = payload.get("role");
+		return userService.promoteUser(id, newRole);
 	}
 }

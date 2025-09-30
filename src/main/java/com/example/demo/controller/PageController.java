@@ -11,5 +11,11 @@ public class PageController
 	{
 		return "register";
 	}
+	
+	@GetMapping("/superuser")
+	public String showSuperuserDashboard()
+	{
+		return "superuser";
+	}
 
 }

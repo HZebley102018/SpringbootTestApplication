@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>	
+	<meta charset="UTF-8">	
+	<title>SuperUser Dashboard</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+	<body class="p-4">
+		<div class="container">
+			<h1 class="mb-4">SuperUser Dashboard</h1>				
+			<!-- UserTable -->
+			<table class="table table-striped">
+				<thead>
+					<tr>							<th>ID</th>
+						<th>First</th>
+						<th>Last</th>
+						<th>Username</th>
+						<th>Email</th>
+						<th>Role</th>
+						<th>Actions</th>	
+					</tr>
+				</thead>
+				<tbody id="userTableBody"></tbody>
+			</table>
+		</div>
+			
+		<script>			
+			const API_URL = "http://localhost:8080/users";
+				
+			function loadUsers() 
+			{
+				fetch(`${API_URL}`)
+					.then(res => res.json())
+					.then(users => 
+					{
+						const tbody = document.getElementById("userTableBody");
+						tbody.innerHTML = "";
+						users.forEach(u =>
+						{
+							tbody.innerHTML += `
+							<tr>
+								<td>${u.id}</td>
+								<td>${u.firstName}</td>
+								<td>${u.lastName}</td>
+								<td>${u.userName}</td>
+								<td>${u.email}</td>
+								<td>${u.role}</td>									<td>
+									<button class="btn btn-sm btn-warning" onclick="promoteToAdmin(${u.id})">Make Admin</button>
+									<button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">Delete</button>
+								</td>
+							</tr>`;
+						});
+					});
+			}
+				
+			function promoteToAdmin(id)
+			{
+				fetch(`${API_URL}/superuser/${id}`, 
+				{
+					method:"PUT",
+					headers:{ "Content-Type": "application/json" },
+					body: JSON.stringify({ role: "ADMIN"})
+				})			
+				.then(res => 
+				{
+					if(!res.ok) throw new Error("Promotion failed");
+					loadUsers();
+				})
+				.catch(err=>console.error(err));
+			}
+				
+			function deleteUser(id)
+			{
+				if(confirm("Are you sure you want to delete this user?"))
+				{
+					fetch(`${API_URL}/${id}`, { method: "DELETE" })
+						.then(res => 
+						{
+							if(!res.ok) throw new Error("Delete failed.");
+							loadUsers();
+						})
+						.catch(err => console.error(err));
+				}
+			}
+			loadUsers();
+	</script>
+</body>
+</html>

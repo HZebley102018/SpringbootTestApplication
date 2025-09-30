@@ -1,10 +1,10 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 @Entity
+@Table(name = "user")
 public class User 
 {
 	@Id
@@ -16,6 +16,9 @@ public class User
 	private String userName;
 	private String email;
 	
+	//default role
+	private String role = "USER";
+	
 	//Store a hashed password
 	private String password;
 	
@@ -23,13 +26,14 @@ public class User
 	public User() {}
 	
 	public User(String firstName, String lastName, String userName,
-			String email, String password)
+			String email, String password, String role)
 	{
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.userName = userName;
 		this.email = email;
 		this.password = password;
+		this.role = role;
 	}
 	
 	
@@ -87,5 +91,13 @@ public class User
 	public void setPassword(String password)
 	{
 		this.password = password;
+	}
+	public String getRole()
+	{
+		return role;
+	}
+	public void setRole(String role)
+	{
+		this.role = role;
 	}
 }

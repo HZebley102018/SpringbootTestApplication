@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,12 @@ public class UserService
 			{
 				user.setPassword(passwordEncoder.encode(user.getPassword()));
 			}
+			
+			//set default role
+			if(user.getRole() == null || user.getRole().isEmpty()) 
+			{
+				user.setRole("USER");
+			}
 			return userRepository.save(user);
 			
 		}
@@ -47,6 +54,33 @@ public class UserService
 			logger.error("Error creating user: {}", e.getMessage(), e);
 			return null;
 		}
+	}
+	
+	//Create admin (SUPERUSER ONLY)
+	public User createAdmin(User adminUser, String requestingUserName)
+	{
+		Optional<User> creatorOpt = userRepository.findByUserName(requestingUserName);
+		
+		if(creatorOpt.isEmpty())
+		{
+			throw new RuntimeException("Requesting user not found.");
+		}
+		
+		User creator = creatorOpt.get();
+		if(!"SUPERUSER".equalsIgnoreCase(creator.getRole()))
+		{
+			throw new RuntimeException("Only a SUPERUSER can create admins.");
+		}
+		
+		logger.info("SUPERUSER {} is creating ADMIN {}", creator.getUserName(), adminUser.getUserName());
+
+		if(adminUser.getPassword() != null)
+		{
+			adminUser.setPassword(passwordEncoder.encode(adminUser.getPassword()));
+		}
+		adminUser.setRole("ADMIN");
+		
+		return userRepository.save(adminUser);
 	}
 	
 	//Get Users
@@ -87,5 +121,16 @@ public class UserService
 	{
 		logger.warn("Deleting user with ID {}", id);
 		userRepository.deleteById(id);
+	}
+
+	public User promoteUser(Long id, String newRole) 
+	{
+		return userRepository.findById(id).map(user ->
+		{
+			logger.info("Promoting user {} to role {}", user.getUserName(),newRole);
+			user.setRole(newRole);
+			return userRepository.save(user);
+		})
+		.orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 	}
 }
