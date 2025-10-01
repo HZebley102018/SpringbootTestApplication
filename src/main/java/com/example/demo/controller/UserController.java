@@ -5,6 +5,7 @@ import com.example.demo.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -57,6 +58,28 @@ public class UserController
 		User saved = userService.createUser(user);
 		return ResponseEntity.ok(saved);
 		
+	}
+	
+	//Login
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody Map<String, String> loginData)
+	{
+		String username = loginData.get("username");
+		String password = loginData.get("password");
+		
+		return userService.getUserByUsername(username)
+				.map(user ->
+				{
+					if (new BCryptPasswordEncoder().matches(password, user.getPassword())) 
+					{
+						return ResponseEntity.ok(user);
+					}
+					else
+					{
+						return ResponseEntity.status(401).body("Invalid password");
+					}
+				})
+				.orElse(ResponseEntity.status(404).body("User not found"));
 	}
 	//Delete user
 	//curl -X DELETE http://localhost:8080/users/id (replace id with id)

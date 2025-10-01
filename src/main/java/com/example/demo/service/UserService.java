@@ -98,6 +98,12 @@ public class UserService
 		}
 	}
 	
+	//Look up username
+	public Optional<User> getUserByUsername(String username)
+	{
+		return userRepository.findByUserName(username);
+	}
+	
 	//Update Users
 	public User updateUser(Long id, User updatedUser)
 	{

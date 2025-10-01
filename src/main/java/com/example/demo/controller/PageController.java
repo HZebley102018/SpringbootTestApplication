@@ -17,5 +17,17 @@ public class PageController
 	{
 		return "superuser";
 	}
+	
+	@GetMapping("/")
+	public String showLoginPage()
+	{
+		return "index";
+	}
+	
+	@GetMapping("/user")
+	public String showUserPage()
+	{
+		return "user";
+	}
 
 }
