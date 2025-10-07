@@ -104,6 +104,18 @@ public class UserService
 		return userRepository.findByUserName(username);
 	}
 	
+	//look up id
+	public Optional<User> getUserById(Long id)
+	{
+		return userRepository.findById(id);
+	}
+	
+	//save  User
+	public User saveUser(User user)
+	{
+		return userRepository.save(user);
+	}
+	
 	//Update Users
 	public User updateUser(Long id, User updatedUser)
 	{

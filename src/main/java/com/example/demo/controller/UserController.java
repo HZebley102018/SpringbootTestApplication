@@ -95,11 +95,18 @@ public class UserController
 	 * -d'{"firstName":" ","lastName":" ", "userName":" ","email":" "}'
 	 */
 	
-	@PutMapping("/{id}")
-	public User updateUser(@PathVariable Long id,
-			@RequestBody User user)
+	@PutMapping("/superuser/update/{id}")
+	public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser)
 	{
-		return userService.updateUser(id, user);
+		return userService.getUserById(id)
+				.map(user ->
+				{
+					user.setUserName(updatedUser.getUserName());
+					user.setEmail(updatedUser.getEmail());
+					userService.saveUser(user);
+					return ResponseEntity.ok(user);
+				})
+				.orElse(ResponseEntity.notFound().build());
 	}
 	
 	//promote user to admin

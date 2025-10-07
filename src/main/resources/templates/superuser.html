@@ -11,7 +11,8 @@
 			<!-- UserTable -->
 			<table class="table table-striped">
 				<thead>
-					<tr>							<th>ID</th>
+					<tr>				
+						<th>ID</th>
 						<th>First</th>
 						<th>Last</th>
 						<th>Username</th>
@@ -44,7 +45,9 @@
 								<td>${u.lastName}</td>
 								<td>${u.userName}</td>
 								<td>${u.email}</td>
-								<td>${u.role}</td>									<td>
+								<td>${u.role}</td>									
+								<td>
+									<button class="btn btn-sm btn-info" onclick="editUser(${u.id}, '${u.userName}', '${u.email}')">Edit</button>
 									<button class="btn btn-sm btn-warning" onclick="promoteToAdmin(${u.id})">Make Admin</button>
 									<button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">Delete</button>
 								</td>
@@ -80,6 +83,31 @@
 							loadUsers();
 						})
 						.catch(err => console.error(err));
+				}
+			}
+			
+			function editUser(id, currentUserName, currentEmail)
+			{
+				const newUserName = prompt("Enter new username:", currentUserName);
+				const newEmail = prompt("Enter new email:", currentEmail);
+				
+				if(newUserName && newEmail)
+				{
+					fetch(`${API_URL}/superuser/update/${id}`,{
+						method: "PUT",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify ({
+							userName: newUserName,
+							email: newEmail
+						})
+					})
+					.then(res=> 
+					{
+						if(!res.ok) throw new Error("Update failed");
+						return res.json();
+					})
+					.then(() => loadUsers())
+					.catch(err => console.error(err));
 				}
 			}
 			loadUsers();
