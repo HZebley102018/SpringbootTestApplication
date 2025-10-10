@@ -83,7 +83,7 @@ public class UserController
 	}
 	//Delete user
 	//curl -X DELETE http://localhost:8080/users/id (replace id with id)
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/superuser/{id}")
 	public void deleteUser(@PathVariable Long id)
 	{
 		userService.deleteUser(id);

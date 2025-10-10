@@ -18,12 +18,15 @@
 				<button type="submit" class="btn btn-primary w-100">Login</button>
 			</form>
 			
-			<a href="/register" class="btn btn-secondary">Register</a>
+			<a href="/register" class="btn btn-secondary mt-2">Register</a>
+			<div id="error" class="alert alert-danger mt-2" style="display:none;">
+				Invalid username or password.
+			</div>
 
 		</div>
 		
 		<script>
-			const API_URL="http://localhost:8080/users";
+			const API_URL="/users";
 			
 			document.getElementById("loginForm").addEventListener("submit", async function (e)
 			{
@@ -61,7 +64,7 @@
 				catch (err)
 				{
 					console.error(err);
-					document.getElementById("error").style.display = "block;"
+					document.getElementById("error").style.display = "block";
 				}
 			});
 		</script>
