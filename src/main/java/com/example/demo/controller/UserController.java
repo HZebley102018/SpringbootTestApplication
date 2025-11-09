@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +17,8 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController 
 {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 	@Autowired
 	private final UserService userService;
 	
@@ -28,6 +32,7 @@ public class UserController
 	@GetMapping
 	public List<User> getUsers()
 	{
+		logger.info("Entering and exiting getUsers()");
 		return userService.getAllUsers();
 	}
 	
@@ -39,6 +44,7 @@ public class UserController
 	@PostMapping
 	public User addUser(@RequestBody User user)
 	{
+		logger.info("Entering and exiting addUser()");
 		return userService.createUser(user);
 	}
 	//Add Admin
@@ -46,7 +52,9 @@ public class UserController
 	public ResponseEntity<User> createAdmin(@RequestBody User adminUser,
 			@RequestParam String creatorUserName)
 	{
+		logger.info("Entering createAdmin()");
 		User created = userService.createAdmin(adminUser, creatorUserName);
+		logger.info("Exiting createAdmin()");
 		return ResponseEntity.ok(created);
 	}
 	
@@ -55,7 +63,9 @@ public class UserController
 	@PostMapping("/register")
 	public ResponseEntity<User> register(@RequestBody User user)
 	{	
+		logger.info("Entering register()");
 		User saved = userService.createUser(user);
+		logger.info("Exiting register()");
 		return ResponseEntity.ok(saved);
 		
 	}
@@ -64,6 +74,7 @@ public class UserController
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody Map<String, String> loginData)
 	{
+		logger.info("Entering login()");
 		String username = loginData.get("username");
 		String password = loginData.get("password");
 		
@@ -72,10 +83,12 @@ public class UserController
 				{
 					if (new BCryptPasswordEncoder().matches(password, user.getPassword())) 
 					{
+						logger.info("Exiting login()");
 						return ResponseEntity.ok(user);
 					}
 					else
 					{
+						logger.info("Exiting login()");
 						return ResponseEntity.status(401).body("Invalid password");
 					}
 				})
@@ -86,6 +99,7 @@ public class UserController
 	@DeleteMapping("/superuser/{id}")
 	public void deleteUser(@PathVariable Long id)
 	{
+		logger.info("Entering and exiting deleterUser()");
 		userService.deleteUser(id);
 	}
 
@@ -98,6 +112,7 @@ public class UserController
 	@PutMapping("/superuser/update/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser)
 	{
+		logger.info("Entering and exiting updateUser()");
 		return userService.getUserById(id)
 				.map(user ->
 				{
@@ -113,7 +128,9 @@ public class UserController
 	@PutMapping("/superuser/{id}")
 	public User promoteUser(@PathVariable Long id, @RequestBody Map<String, String> payload)
 	{
+		logger.info("Entering promoteUser()");
 		String newRole = payload.get("role");
+		logger.info("Exiting promoteUser()");
 		return userService.promoteUser(id, newRole);
 	}
 }
